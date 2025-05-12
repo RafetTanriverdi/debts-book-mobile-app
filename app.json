@@ -37,6 +37,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "72971ef2-d632-4644-aa40-687eb77095e7"
+      }
+    },
+    "owner": "rafettanriverdi"
   }
 }
