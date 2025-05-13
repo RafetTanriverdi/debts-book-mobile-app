@@ -9,9 +9,17 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
+import { supabase } from "@/lib/supabase";
 import { Button } from "react-native-paper";
 
 export default function HomeScreen() {
+  const handleLogout = async () => {
+    const { error } =
+      await supabase.auth.signOut();
+
+    console.log("error", error);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{
@@ -84,11 +92,11 @@ export default function HomeScreen() {
         </ThemedText>
         <Button
           icon={"account-cowboy-hat"}
-          mode="contained-tonal"
-          onPress={() => console.log("Pressed")}
+          mode="elevated"
+          onPress={handleLogout}
         >
           <ThemedText type="defaultSemiBold">
-            npm run reset-project
+            Log Out
           </ThemedText>
         </Button>
       </ThemedView>

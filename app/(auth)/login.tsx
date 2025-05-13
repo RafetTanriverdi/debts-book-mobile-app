@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -9,7 +10,7 @@ import {
   Button,
   TextInput as Input,
 } from "react-native-paper";
-import 'react-native-url-polyfill/auto';
+import "react-native-url-polyfill/auto";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -18,33 +19,26 @@ export default function Auth() {
 
   async function signInWithEmail() {
     setLoading(true);
-    const { error ,data} =
+    const { error, data } =
       await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
 
-      console.log("data", data);
-    if (error) Alert.alert(error.message);
-    setLoading(false);
-  }
-
-  async function signUpWithEmail() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert(
-        "Please check your inbox for email verification!"
-      );
-    setLoading(false);
+    if (error) {
+      Alert.alert(error.message);
+      setLoading(false);
+    } else {
+      if (
+        data.user?.user_metadata.role ===
+        "business"
+      ) {
+        router.replace("/(business)");
+      } else {
+        router.replace("/(customer)");
+      }
+      setLoading(false);
+    }
   }
 
   return (
@@ -57,17 +51,24 @@ export default function Auth() {
       >
         <Input
           label="Email"
-      
+          autoComplete="email"
+          textContentType="emailAddress"
+          keyboardType="email-address"
+          mode="outlined"
           onChangeText={(text) => setEmail(text)}
           value={email}
           placeholder="email@address.com"
           autoCapitalize={"none"}
+          error={
+            email.length > 0 &&
+            !email.includes("@")
+          }
         />
       </View>
       <View style={styles.verticallySpaced}>
         <Input
           label="Password"
-          
+          mode="outlined"
           onChangeText={(text) =>
             setPassword(text)
           }
@@ -84,19 +85,11 @@ export default function Auth() {
         ]}
       >
         <Button
-          disabled={loading}
+          loading={loading}
           onPress={() => signInWithEmail()}
+          mode="contained"
         >
           Sign in
-        </Button>
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Button
-  
-          disabled={loading}
-           onPress={() => signUpWithEmail()}
-        >
-          Sign up
         </Button>
       </View>
     </View>
@@ -105,8 +98,11 @@ export default function Auth() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
-    padding: 12,
+    marginTop: -120,
+    padding: 18,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   verticallySpaced: {
     paddingTop: 4,
